@@ -8,30 +8,41 @@ interface ScoreBadgeProps {
   onClick?: () => void;
 }
 
+/** Glow color per tier for the box-shadow pulse */
+const TIER_GLOW: Record<string, string> = {
+  SAFE: 'rgba(34, 197, 94, 0.6)',
+  CAUTION: 'rgba(234, 179, 8, 0.6)',
+  RISKY: 'rgba(249, 115, 22, 0.6)',
+  DANGER: 'rgba(239, 68, 68, 0.6)',
+};
+
 /** Inline styles for Shadow DOM isolation — no external CSS needed */
 const badgeStyle = (tier: ScoreTier, clickable: boolean): React.CSSProperties => ({
   display: 'inline-flex',
   alignItems: 'center',
   gap: '4px',
-  padding: '2px 8px',
-  borderRadius: '12px',
-  fontSize: '12px',
+  padding: '3px 10px',
+  borderRadius: '14px',
+  fontSize: '11px',
   fontWeight: 700,
   fontFamily: 'system-ui, -apple-system, sans-serif',
   color: '#fff',
   backgroundColor: TIER_COLORS[tier] ?? '#6b7280',
+  boxShadow: `0 0 8px ${TIER_GLOW[tier] ?? 'rgba(107,114,128,0.5)'}`,
   lineHeight: '18px',
   cursor: clickable ? 'pointer' : 'default',
   userSelect: 'none',
   whiteSpace: 'nowrap',
+  animation: 'sentinelfi-glow 2s ease-in-out infinite',
+  letterSpacing: '0.3px',
 });
 
 const skeletonStyle: React.CSSProperties = {
   display: 'inline-block',
-  width: '60px',
-  height: '22px',
-  borderRadius: '12px',
-  background: 'linear-gradient(90deg, #e5e7eb 25%, #f3f4f6 50%, #e5e7eb 75%)',
+  width: '100px',
+  height: '24px',
+  borderRadius: '14px',
+  background: 'linear-gradient(90deg, #1e293b 25%, #334155 50%, #1e293b 75%)',
   backgroundSize: '200% 100%',
   animation: 'sentinelfi-shimmer 1.5s infinite',
 };
@@ -51,17 +62,25 @@ function LoadingSkeleton() {
   );
 }
 
-/** Score badge pill showing score number + tier label with color coding */
+/** Score badge pill — "🛡 Sentinel · score TIER" with glow effect */
 export function ScoreBadge({ score, tier, loading, onClick }: ScoreBadgeProps) {
   if (loading) return <LoadingSkeleton />;
 
   return (
-    <span
-      style={badgeStyle(tier, !!onClick)}
-      title={`SentinelFi Risk Score: ${score}/100 (${tier})`}
-      onClick={onClick}
-    >
-      {score} {tier}
-    </span>
+    <>
+      <style>{`
+        @keyframes sentinelfi-glow {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0.85; }
+        }
+      `}</style>
+      <span
+        style={badgeStyle(tier, !!onClick)}
+        title={`Sentinel Risk Score: ${score}/100 (${tier})`}
+        onClick={onClick}
+      >
+        🛡 Sentinel · {score} {tier}
+      </span>
+    </>
   );
 }

@@ -91,24 +91,34 @@ function injectPlaceholderBadge(card: HTMLElement, onClick?: () => void): void {
   const style: React.CSSProperties = {
     display: 'inline-flex',
     alignItems: 'center',
-    padding: '2px 8px',
-    borderRadius: '12px',
+    padding: '3px 10px',
+    borderRadius: '14px',
     fontSize: '11px',
-    fontWeight: 600,
+    fontWeight: 700,
     fontFamily: 'system-ui, -apple-system, sans-serif',
-    color: '#9ca3af',
-    backgroundColor: '#1f2937',
-    border: '1px solid #374151',
+    color: '#e0e7ff',
+    backgroundColor: '#312e81',
+    boxShadow: '0 0 8px rgba(99, 102, 241, 0.5)',
     lineHeight: '18px',
     cursor: onClick ? 'pointer' : 'default',
     userSelect: 'none',
     whiteSpace: 'nowrap',
+    animation: 'sentinelfi-pulse 2s ease-in-out infinite',
+    letterSpacing: '0.3px',
   };
 
   ReactDOM.createRoot(mountPoint).render(
-    <span style={style} title="SentinelFi — Click to scan" onClick={onClick}>
-      🛡 Scan
-    </span>
+    <>
+      <style>{`
+        @keyframes sentinelfi-pulse {
+          0%, 100% { box-shadow: 0 0 8px rgba(99, 102, 241, 0.5); }
+          50% { box-shadow: 0 0 14px rgba(99, 102, 241, 0.8); }
+        }
+      `}</style>
+      <span style={style} title="Scan with Sentinel" onClick={onClick}>
+        🛡 Scan with Sentinel
+      </span>
+    </>
   );
 }
 
@@ -362,6 +372,9 @@ function setupObserver(ctx: InstanceType<typeof ContentScriptContext>): void {
     if (isProcessing) return; // Ignore mutations caused by our own badge injection
     if (debounceTimer) clearTimeout(debounceTimer);
     debounceTimer = setTimeout(async () => {
+      // Skip badge injection on detail pages (SPA navigation may change URL after observer setup)
+      if (/\/project\/0x[a-fA-F0-9]{40}/i.test(window.location.pathname)) return;
+
       isProcessing = true;
       try {
         const allCards = findTokenCards();

@@ -19,10 +19,12 @@ export function DetailSidebarPanelWithFullScoreBreakdown({
   const panelRef = useRef<HTMLDivElement>(null);
   const [reported, setReported] = useState(false);
 
-  // Close on click outside
+  // Close on click outside — use composedPath() to handle Shadow DOM event retargeting
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
-      if (panelRef.current && !panelRef.current.contains(e.target as Node)) {
+      if (!panelRef.current) return;
+      const path = e.composedPath();
+      if (!path.includes(panelRef.current)) {
         onClose();
       }
     };
@@ -259,14 +261,12 @@ export function DetailSidebarPanelWithFullScoreBreakdown({
             >
               {reported ? '✓ Reported' : 'Report False Positive'}
             </button>
-            <a
-              href={`https://basescan.org/token/${score.tokenAddress}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              style={linkStyle}
+            <span
+              style={{ ...linkStyle, cursor: 'pointer' }}
+              onClick={() => window.open(`https://basescan.org/token/${score.tokenAddress}`, '_blank')}
             >
               View on BaseScan →
-            </a>
+            </span>
           </div>
         )}
       </div>

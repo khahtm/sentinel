@@ -59,10 +59,10 @@ export async function scoreHolderHealth(
     // Lower concentration = better score
     const topPct = holders[0]?.percentage || 100;
     let topWalletPoints = 0;
-    if (topPct < 5) topWalletPoints = 8;
-    else if (topPct < 10) topWalletPoints = 6;
-    else if (topPct < 20) topWalletPoints = 4;
-    else if (topPct < 30) topWalletPoints = 2;
+    if (topPct < 10) topWalletPoints = 8;
+    else if (topPct < 20) topWalletPoints = 6;
+    else if (topPct < 35) topWalletPoints = 4;
+    else if (topPct < 50) topWalletPoints = 2;
 
     signals.push({
       name: 'Top Holder Concentration',
@@ -74,10 +74,10 @@ export async function scoreHolderHealth(
     // Signal 2: Top 10 combined percentage (0-7 points)
     const top10Pct = holders.reduce((sum, h) => sum + h.percentage, 0);
     let top10Points = 0;
-    if (top10Pct < 30) top10Points = 7;
-    else if (top10Pct < 50) top10Points = 5;
-    else if (top10Pct < 70) top10Points = 3;
-    else if (top10Pct < 85) top10Points = 1;
+    if (top10Pct < 40) top10Points = 7;
+    else if (top10Pct < 60) top10Points = 5;
+    else if (top10Pct < 80) top10Points = 3;
+    else if (top10Pct < 95) top10Points = 1;
 
     signals.push({
       name: 'Top 10 Distribution',
@@ -115,8 +115,8 @@ export async function scoreHolderHealth(
         (b) => Math.abs(b - avgBalance) / avgBalance < 0.1
       ).length;
 
-      if (similarCount >= 4) sybilPoints = -10; // Likely sybil wallets
-      else if (similarCount >= 3) sybilPoints = -5;
+      if (similarCount >= 4) sybilPoints = -5; // Likely sybil wallets
+      else if (similarCount >= 3) sybilPoints = -2;
     }
 
     signals.push({
@@ -131,7 +131,7 @@ export async function scoreHolderHealth(
 
     // Calculate category score
     const rawScore = signals.reduce((sum, s) => sum + s.points, 0);
-    const percentage = ((rawScore + 10) / (MAX_POINTS + 10)) * 100; // Offset by min possible (-10)
+    const percentage = ((rawScore + 5) / (MAX_POINTS + 5)) * 100; // Offset by min possible (-5)
     const weightedScore = (percentage / 100) * CATEGORY_WEIGHT * 100;
 
     return {

@@ -85,11 +85,11 @@ export async function scoreCreatorTrust(
 
     // Signal 2: Transaction count (0-5 points)
     let txPoints = 0;
-    if (creatorData.txCount >= 1000) txPoints = 5;
-    else if (creatorData.txCount >= 500) txPoints = 4;
-    else if (creatorData.txCount >= 100) txPoints = 3;
-    else if (creatorData.txCount >= 50) txPoints = 2;
-    else if (creatorData.txCount >= 10) txPoints = 1;
+    if (creatorData.txCount >= 500) txPoints = 5;
+    else if (creatorData.txCount >= 200) txPoints = 4;
+    else if (creatorData.txCount >= 50) txPoints = 3;
+    else if (creatorData.txCount >= 20) txPoints = 2;
+    else if (creatorData.txCount >= 5) txPoints = 1;
 
     signals.push({
       name: 'Transaction History',
@@ -139,10 +139,10 @@ export async function scoreCreatorTrust(
       supplyValue > 0n ? Number((balanceValue * 10000n) / supplyValue) / 100 : 0;
 
     let holdingsPoints = 0;
-    if (holdingsPct >= 50) holdingsPoints = -10;
-    else if (holdingsPct >= 30) holdingsPoints = -7;
-    else if (holdingsPct >= 20) holdingsPoints = -5;
-    else if (holdingsPct >= 10) holdingsPoints = -3;
+    if (holdingsPct >= 50) holdingsPoints = -6;
+    else if (holdingsPct >= 30) holdingsPoints = -4;
+    else if (holdingsPct >= 20) holdingsPoints = -2;
+    else if (holdingsPct >= 10) holdingsPoints = -1;
 
     signals.push({
       name: 'Creator Holdings',
@@ -155,9 +155,9 @@ export async function scoreCreatorTrust(
     // Simplified: check if wallet has reasonable ETH balance
     const ethBalance = Number(creatorData.balance) / 1e18;
     let fundingPoints = 0;
-    if (ethBalance < 0.001) fundingPoints = -15; // Likely funded by CEX/mixer
-    else if (ethBalance < 0.01) fundingPoints = -10;
-    else if (ethBalance < 0.1) fundingPoints = -5;
+    if (ethBalance < 0.001) fundingPoints = -8;
+    else if (ethBalance < 0.01) fundingPoints = -4;
+    else if (ethBalance < 0.1) fundingPoints = -2;
 
     signals.push({
       name: 'Funding Source',
@@ -168,7 +168,7 @@ export async function scoreCreatorTrust(
 
     // Calculate category score
     const rawScore = signals.reduce((sum, s) => sum + s.points, 0);
-    const percentage = ((rawScore + 15) / (MAX_POINTS + 15)) * 100; // Offset by min possible (-15)
+    const percentage = ((rawScore + 14) / (MAX_POINTS + 14)) * 100; // Offset by min possible (-8 + -6)
     const weightedScore = (percentage / 100) * CATEGORY_WEIGHT * 100;
 
     return {

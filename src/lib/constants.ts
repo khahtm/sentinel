@@ -11,11 +11,11 @@ export const BASE_PUBLIC_RPC = 'https://mainnet.base.org';
 export const ALCHEMY_RPC_URL = (key: string) =>
   `https://base-mainnet.g.alchemy.com/v2/${key}`;
 
-/** Score tier thresholds */
+/** Score tier thresholds (lenient — most meme tokens are new & concentrated) */
 export const TIER_THRESHOLDS = {
-  SAFE: 80,
-  CAUTION: 60,
-  RISKY: 40,
+  SAFE: 65,
+  CAUTION: 40,
+  RISKY: 20,
   DANGER: 0,
 } as const;
 

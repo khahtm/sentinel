@@ -51,7 +51,7 @@ export async function scoreContractSafety(
     if (honeypotResult.status === 'fulfilled') {
       const result = honeypotResult.value;
       if (result.isHoneypot) {
-        honeypotPoints = -20;
+        honeypotPoints = -12;
         honeypotDetail = result.detail;
       } else {
         honeypotPoints = 0;
@@ -74,10 +74,10 @@ export async function scoreContractSafety(
     if (honeypotResult.status === 'fulfilled') {
       const taxPct = honeypotResult.value.taxPercent;
       if (taxPct > 20) {
-        taxPoints = -5;
+        taxPoints = -3;
         taxDetail = `High tax: ${taxPct}%`;
       } else if (taxPct > 10) {
-        taxPoints = -3;
+        taxPoints = -2;
         taxDetail = `Moderate tax: ${taxPct}%`;
       } else if (taxPct > 5) {
         taxPoints = -1;
@@ -126,7 +126,7 @@ export async function scoreContractSafety(
 
     // Calculate category score
     const rawScore = signals.reduce((sum, s) => sum + s.points, 0);
-    const percentage = ((rawScore + 25) / (MAX_POINTS + 25)) * 100; // Offset by min possible (-25)
+    const percentage = ((rawScore + 15) / (MAX_POINTS + 15)) * 100; // Offset by min possible (-12 + -3)
     const weightedScore = (percentage / 100) * CATEGORY_WEIGHT * 100;
 
     return {

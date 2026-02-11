@@ -7,25 +7,25 @@ type BaseClient = ReturnType<typeof createBaseClient>;
 /**
  * Map creator transaction count to a 0-50 score.
  * Higher tx count = older/more active wallet = safer.
- * >500 tx = 50 points, <10 tx = 5 points. Linear interpolation between.
+ * >200 tx = 50 points, <5 tx = 10 points. Linear interpolation between.
  */
 function scoreCreatorAge(txCount: number): number {
-  if (txCount >= 500) return SCORE_WEIGHTS.creatorAge;
-  if (txCount < 10) return 5;
-  // Linear scale: 10-500 maps to 5-50
-  return Math.round(5 + ((txCount - 10) / 490) * 45);
+  if (txCount >= 200) return SCORE_WEIGHTS.creatorAge;
+  if (txCount < 5) return 10;
+  // Linear scale: 5-200 maps to 10-50
+  return Math.round(10 + ((txCount - 5) / 195) * 40);
 }
 
 /**
  * Map top holder percentage to a 0-50 score.
  * Lower concentration = safer. Inverse relationship.
- * >50% supply held = 0 points, <5% = 50 points.
+ * >80% supply held = 5 points, <10% = 50 points.
  */
 function scoreHolderConcentration(holderPct: number): number {
-  if (holderPct >= 50) return 0;
-  if (holderPct <= 5) return SCORE_WEIGHTS.holderConcentration;
-  // Linear inverse: 5-50% maps to 50-0
-  return Math.round(50 - ((holderPct - 5) / 45) * 50);
+  if (holderPct >= 80) return 5;
+  if (holderPct <= 10) return SCORE_WEIGHTS.holderConcentration;
+  // Linear inverse: 10-80% maps to 50-5
+  return Math.round(50 - ((holderPct - 10) / 70) * 45);
 }
 
 /** Determine score tier from numeric score */
