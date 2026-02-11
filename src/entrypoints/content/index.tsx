@@ -71,6 +71,45 @@ function injectLoadingBadge(card: HTMLElement): void {
   );
 }
 
+/** Inject a placeholder badge when no creator data is available */
+function injectPlaceholderBadge(card: HTMLElement): void {
+  if (card.querySelector(`.${BADGE_HOST_CLASS}`)) return;
+
+  const host = document.createElement('div');
+  host.className = BADGE_HOST_CLASS;
+  host.style.display = 'inline-block';
+  host.style.marginLeft = '4px';
+
+  const shadow = host.attachShadow({ mode: 'closed' });
+  const mountPoint = document.createElement('div');
+  shadow.appendChild(mountPoint);
+
+  card.appendChild(host);
+
+  const style: React.CSSProperties = {
+    display: 'inline-flex',
+    alignItems: 'center',
+    padding: '2px 8px',
+    borderRadius: '12px',
+    fontSize: '11px',
+    fontWeight: 600,
+    fontFamily: 'system-ui, -apple-system, sans-serif',
+    color: '#9ca3af',
+    backgroundColor: '#1f2937',
+    border: '1px solid #374151',
+    lineHeight: '18px',
+    cursor: 'default',
+    userSelect: 'none',
+    whiteSpace: 'nowrap',
+  };
+
+  ReactDOM.createRoot(mountPoint).render(
+    <span style={style} title="SentinelFi — Creator data unavailable for scoring">
+      🛡 Sentinel
+    </span>
+  );
+}
+
 /** Create or get global sidebar host element */
 function getSidebarHost(): HTMLDivElement {
   if (!sidebarHost) {
@@ -174,19 +213,24 @@ async function scoreAndInjectCards(cards: TokenCardData[]): Promise<void> {
         (c) => c.tokenAddress === score.tokenAddress
       );
       if (card) {
-        // Remove loading skeleton and inject quick score badge with click handler
+        // Remove loading skeleton
         card.element.querySelector(`.${BADGE_HOST_CLASS}`)?.remove();
 
         const tokenAddress = card.tokenAddress;
         const creatorAddress = card.creatorAddress;
 
-        injectBadge(
-          card.element,
-          score,
-          tokenAddress,
-          creatorAddress,
-          () => openSidebar(tokenAddress, creatorAddress)
-        );
+        // Show placeholder badge when no real creator data available
+        if (!creatorAddress) {
+          injectPlaceholderBadge(card.element);
+        } else {
+          injectBadge(
+            card.element,
+            score,
+            tokenAddress,
+            creatorAddress,
+            () => openSidebar(tokenAddress, creatorAddress)
+          );
+        }
       }
     }
 
