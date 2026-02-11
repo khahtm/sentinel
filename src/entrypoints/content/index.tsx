@@ -72,7 +72,7 @@ function injectLoadingBadge(card: HTMLElement): void {
 }
 
 /** Inject a placeholder badge when no creator data is available */
-function injectPlaceholderBadge(card: HTMLElement): void {
+function injectPlaceholderBadge(card: HTMLElement, onClick?: () => void): void {
   if (card.querySelector(`.${BADGE_HOST_CLASS}`)) return;
 
   const host = document.createElement('div');
@@ -98,14 +98,14 @@ function injectPlaceholderBadge(card: HTMLElement): void {
     backgroundColor: '#1f2937',
     border: '1px solid #374151',
     lineHeight: '18px',
-    cursor: 'default',
+    cursor: onClick ? 'pointer' : 'default',
     userSelect: 'none',
     whiteSpace: 'nowrap',
   };
 
   ReactDOM.createRoot(mountPoint).render(
-    <span style={style} title="SentinelFi — Creator data unavailable for scoring">
-      🛡 Sentinel
+    <span style={style} title="SentinelFi — Click to scan" onClick={onClick}>
+      🛡 Scan
     </span>
   );
 }
@@ -221,7 +221,7 @@ async function scoreAndInjectCards(cards: TokenCardData[]): Promise<void> {
 
         // Show placeholder badge when no real creator data available
         if (!creatorAddress) {
-          injectPlaceholderBadge(card.element);
+          injectPlaceholderBadge(card.element, () => openSidebar(tokenAddress));
         } else {
           injectBadge(
             card.element,
