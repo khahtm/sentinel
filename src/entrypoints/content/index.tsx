@@ -196,61 +196,60 @@ function closeSidebar(): void {
   sidebarRoot?.render(null);
 }
 
-/** Request scores from service worker and inject badges for given cards */
+/** Inject badges for given cards — placeholder if no creator, scored if creator known */
 async function scoreAndInjectCards(cards: TokenCardData[]): Promise<void> {
   if (cards.length === 0) return;
 
-  // Phase 1: Show loading skeletons immediately
-  for (const card of cards) {
-    injectLoadingBadge(card.element);
+  // Split cards by whether creator address is available
+  const withCreator = cards.filter((c) => c.creatorAddress);
+  const withoutCreator = cards.filter((c) => !c.creatorAddress);
+
+  // Cards without creator: show clickable placeholder immediately (no RPC needed)
+  for (const card of withoutCreator) {
+    card.element.querySelector(`.${BADGE_HOST_CLASS}`)?.remove();
+    injectPlaceholderBadge(card.element, () => openSidebar(card.tokenAddress));
   }
 
-  // Phase 2: Request quick scores from background service worker
-  const request: ScoreRequest = {
-    action: 'score-quick',
-    tokens: cards.map((c) => ({
-      tokenAddress: c.tokenAddress,
-      creatorAddress: c.creatorAddress,
-    })),
-  };
+  // Cards with creator: show loading then fetch quick scores
+  if (withCreator.length > 0) {
+    for (const card of withCreator) {
+      injectLoadingBadge(card.element);
+    }
 
-  try {
-    const response: ScoreResponse =
-      await chrome.runtime.sendMessage(request);
+    const request: ScoreRequest = {
+      action: 'score-quick',
+      tokens: withCreator.map((c) => ({
+        tokenAddress: c.tokenAddress,
+        creatorAddress: c.creatorAddress,
+      })),
+    };
 
-    if (!response || !response.scores) return;
+    try {
+      const response: ScoreResponse =
+        await chrome.runtime.sendMessage(request);
 
-    for (const score of response.scores) {
-      const card = cards.find(
-        (c) => c.tokenAddress === score.tokenAddress
-      );
-      if (card) {
-        // Remove loading skeleton
-        card.element.querySelector(`.${BADGE_HOST_CLASS}`)?.remove();
+      if (!response || !response.scores) return;
 
-        const tokenAddress = card.tokenAddress;
-        const creatorAddress = card.creatorAddress;
-
-        // Show placeholder badge when no real creator data available
-        if (!creatorAddress) {
-          injectPlaceholderBadge(card.element, () => openSidebar(tokenAddress));
-        } else {
+      for (const score of response.scores) {
+        const card = withCreator.find(
+          (c) => c.tokenAddress === score.tokenAddress
+        );
+        if (card) {
+          card.element.querySelector(`.${BADGE_HOST_CLASS}`)?.remove();
           injectBadge(
             card.element,
             score,
-            tokenAddress,
-            creatorAddress,
-            () => openSidebar(tokenAddress, creatorAddress)
+            card.tokenAddress,
+            card.creatorAddress!,
+            () => openSidebar(card.tokenAddress, card.creatorAddress)
           );
         }
       }
-    }
 
-    // Phase 3: Background full scoring for visible tokens
-    // Start background full scores for performance data collection
-    startBackgroundFullScoring(cards);
-  } catch (err) {
-    console.error('[SentinelFi] Failed to score tokens:', err);
+      startBackgroundFullScoring(withCreator);
+    } catch (err) {
+      console.error('[SentinelFi] Failed to score tokens:', err);
+    }
   }
 }
 

@@ -38,14 +38,18 @@ export async function computeFullScore(
       return cached;
     }
 
-    // Run all scorers in parallel
-    const results = await Promise.allSettled([
-      scoreCreatorTrust(client, tokenAddress, creatorAddress),
+    // Skip Creator Trust when creator address is same as token (no real creator data)
+    const hasRealCreator = creatorAddress.toLowerCase() !== tokenAddress.toLowerCase();
+
+    const scorers = [
+      ...(hasRealCreator ? [scoreCreatorTrust(client, tokenAddress, creatorAddress)] : []),
       scoreHolderHealth(client, tokenAddress),
       scoreContractSafety(client, tokenAddress, poolAddress),
       scoreLiquiditySignal(client, tokenAddress, poolAddress),
       scoreSocialSignal(client, tokenAddress),
-    ]);
+    ];
+
+    const results = await Promise.allSettled(scorers);
 
     // Collect successful category scores
     const categories = results
