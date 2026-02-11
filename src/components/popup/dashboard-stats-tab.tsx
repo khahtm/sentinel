@@ -24,10 +24,10 @@ export function DashboardStatsTab() {
   };
 
   const statCardStyle: React.CSSProperties = {
-    backgroundColor: '#f9fafb',
+    backgroundColor: '#1a1a1a',
     borderRadius: '8px',
     padding: '16px',
-    border: '1px solid #e5e7eb',
+    border: '1px solid #2a2a2a',
   };
 
   const statLabelStyle: React.CSSProperties = {
@@ -42,12 +42,12 @@ export function DashboardStatsTab() {
   const statValueStyle: React.CSSProperties = {
     fontSize: '32px',
     fontWeight: 700,
-    color: '#111827',
+    color: '#f3f4f6',
   };
 
   const skeletonStyle: React.CSSProperties = {
     height: '32px',
-    backgroundColor: '#e5e7eb',
+    backgroundColor: '#2a2a2a',
     borderRadius: '4px',
     animation: 'sentinelfi-pulse 1.5s infinite',
   };
@@ -56,8 +56,8 @@ export function DashboardStatsTab() {
     padding: '10px 16px',
     fontSize: '13px',
     fontWeight: 600,
-    color: '#fff',
-    backgroundColor: '#3b82f6',
+    color: '#0d0d0d',
+    backgroundColor: '#34d399',
     border: 'none',
     borderRadius: '6px',
     cursor: 'pointer',

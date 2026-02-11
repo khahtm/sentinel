@@ -12,16 +12,17 @@ export function PopupTabNavigationApp() {
   const containerStyle: React.CSSProperties = {
     width: '360px',
     minHeight: '400px',
-    backgroundColor: '#fff',
+    backgroundColor: '#0d0d0d',
     fontFamily: 'system-ui, -apple-system, sans-serif',
     display: 'flex',
     flexDirection: 'column',
+    color: '#e5e7eb',
   };
 
   const tabBarStyle: React.CSSProperties = {
     display: 'flex',
-    borderBottom: '1px solid #e5e7eb',
-    backgroundColor: '#f9fafb',
+    borderBottom: '1px solid #1f2937',
+    backgroundColor: '#111111',
   };
 
   const tabButtonStyle = (isActive: boolean): React.CSSProperties => ({
@@ -29,10 +30,10 @@ export function PopupTabNavigationApp() {
     padding: '12px 16px',
     fontSize: '13px',
     fontWeight: isActive ? 700 : 500,
-    color: isActive ? '#3b82f6' : '#6b7280',
-    backgroundColor: isActive ? '#fff' : 'transparent',
+    color: isActive ? '#34d399' : '#6b7280',
+    backgroundColor: isActive ? '#0d0d0d' : 'transparent',
     border: 'none',
-    borderBottom: isActive ? '2px solid #3b82f6' : 'none',
+    borderBottom: isActive ? '2px solid #34d399' : 'none',
     cursor: 'pointer',
     transition: 'all 0.2s',
   });

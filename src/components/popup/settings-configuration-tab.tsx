@@ -72,15 +72,17 @@ export function SettingsConfigurationTab() {
   const labelStyle: React.CSSProperties = {
     fontSize: '13px',
     fontWeight: 600,
-    color: '#374151',
+    color: '#d1d5db',
   };
 
   const inputStyle: React.CSSProperties = {
     padding: '8px 12px',
     fontSize: '13px',
-    border: '1px solid #d1d5db',
+    border: '1px solid #2a2a2a',
     borderRadius: '6px',
     fontFamily: 'monospace',
+    backgroundColor: '#1a1a1a',
+    color: '#f3f4f6',
   };
 
   const checkboxRowStyle: React.CSSProperties = {
@@ -97,7 +99,7 @@ export function SettingsConfigurationTab() {
 
   const checkboxLabelStyle: React.CSSProperties = {
     fontSize: '13px',
-    color: '#374151',
+    color: '#d1d5db',
     cursor: 'pointer',
   };
 
@@ -105,8 +107,8 @@ export function SettingsConfigurationTab() {
     padding: '10px 16px',
     fontSize: '13px',
     fontWeight: 600,
-    color: '#fff',
-    backgroundColor: saved ? '#22c55e' : '#3b82f6',
+    color: '#0d0d0d',
+    backgroundColor: saved ? '#22c55e' : '#34d399',
     border: 'none',
     borderRadius: '6px',
     cursor: 'pointer',
@@ -115,7 +117,7 @@ export function SettingsConfigurationTab() {
 
   const skeletonStyle: React.CSSProperties = {
     height: '36px',
-    backgroundColor: '#e5e7eb',
+    backgroundColor: '#2a2a2a',
     borderRadius: '6px',
     animation: 'sentinelfi-pulse 1.5s infinite',
   };

@@ -7,3 +7,7 @@ dist/
 .env.*
 nul
 ProjectsSenti/
+
+# AI / vibe coding artifacts
+.claude/
+plans/
