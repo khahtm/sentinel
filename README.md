@@ -4,7 +4,7 @@ Chrome extension that scans every token on [RobinPump.fun](https://robinpump.fun
 
 ## Quick Install
 
-1. **Download** [`sentinelfi-0.1.0-chrome.zip`](./sentinelfi-0.1.0-chrome.zip) from this repo
+1. **Download** [`sentinelfi-0.1.0-chrome.zip`](https://github.com/khahtm/sentinel/releases/download/v0.1.0/sentinelfi-0.1.0-chrome.zip) from the [latest release](https://github.com/khahtm/sentinel/releases/latest)
 2. **Unzip** the file to a folder on your computer
 3. Open **`chrome://extensions/`** in Chrome
 4. Enable **Developer mode** (toggle in top-right corner)
