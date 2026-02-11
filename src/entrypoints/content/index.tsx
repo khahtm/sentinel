@@ -116,7 +116,7 @@ function injectPlaceholderBadge(card: HTMLElement, onClick?: () => void): void {
         }
       `}</style>
       <span style={style} title="Scan with Sentinel" onClick={onClick}>
-        🛡 Scan with Sentinel
+        Scan with Sentinel
       </span>
     </>
   );
@@ -404,7 +404,7 @@ export default defineContentScript({
   cssInjectionMode: 'ui',
 
   async main(ctx) {
-    // Skip badge injection on detail pages (/project/0x...) — only one token, not a listing
+    // Skip badge injection on detail pages (/project/0x...)
     const isDetailPage = /\/project\/0x[a-fA-F0-9]{40}/i.test(window.location.pathname);
     if (isDetailPage) {
       // Still setup alert listener for toast notifications

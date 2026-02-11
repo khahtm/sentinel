@@ -213,7 +213,7 @@ export function DetailSidebarPanelWithFullScoreBreakdown({
             onClick={onClose}
             aria-label="Close"
           >
-            ×
+            x
           </button>
           <div style={titleStyle}>SentinelFi Risk Score</div>
           {score && (
@@ -259,13 +259,13 @@ export function DetailSidebarPanelWithFullScoreBreakdown({
               onClick={handleReportFalsePositive}
               disabled={reported}
             >
-              {reported ? '✓ Reported' : 'Report False Positive'}
+              {reported ? 'Reported' : 'Report False Positive'}
             </button>
             <span
               style={{ ...linkStyle, cursor: 'pointer' }}
               onClick={() => window.open(`https://basescan.org/token/${score.tokenAddress}`, '_blank')}
             >
-              View on BaseScan →
+              View on BaseScan
             </span>
           </div>
         )}

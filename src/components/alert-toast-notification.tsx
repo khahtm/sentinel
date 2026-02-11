@@ -109,7 +109,7 @@ export function AlertToastNotification({
           onClick={onDismiss}
           aria-label="Dismiss"
         >
-          ×
+          x
         </button>
         <div style={titleStyle}>{alert.title}</div>
         <div style={messageStyle}>{alert.message}</div>

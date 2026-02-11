@@ -62,7 +62,7 @@ function LoadingSkeleton() {
   );
 }
 
-/** Score badge pill — "🛡 Sentinel · score TIER" with glow effect */
+/** Score badge pill — "Sentinel · score TIER" with glow effect */
 export function ScoreBadge({ score, tier, loading, onClick }: ScoreBadgeProps) {
   if (loading) return <LoadingSkeleton />;
 
@@ -79,7 +79,7 @@ export function ScoreBadge({ score, tier, loading, onClick }: ScoreBadgeProps) {
         title={`Sentinel Risk Score: ${score}/100 (${tier})`}
         onClick={onClick}
       >
-        🛡 Sentinel · {score} {tier}
+        Sentinel | {score} {tier}
       </span>
     </>
   );

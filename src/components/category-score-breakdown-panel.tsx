@@ -101,7 +101,7 @@ export function CategoryScoreBreakdownPanel({
           <span style={scoreStyle}>
             {category.weightedScore.toFixed(1)}
           </span>
-          <span style={expandIconStyle}>▼</span>
+          <span style={expandIconStyle}>v</span>
         </div>
       </div>
 
