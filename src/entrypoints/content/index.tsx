@@ -84,7 +84,9 @@ function injectPlaceholderBadge(card: HTMLElement, onClick?: () => void): void {
   const mountPoint = document.createElement('div');
   shadow.appendChild(mountPoint);
 
-  card.appendChild(host);
+  // Inject into the ticker row (div.flex.items-center.gap-2) if available
+  const tickerRow = card.querySelector('.flex.items-center.gap-2');
+  (tickerRow ?? card).appendChild(host);
 
   const style: React.CSSProperties = {
     display: 'inline-flex',
