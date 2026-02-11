@@ -1,0 +1,40 @@
+{
+  "name": "sentinelfi",
+  "description": "Rug-pull shield for RobinPump. See safety scores on every token.",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "wxt",
+    "dev:firefox": "wxt --browser firefox",
+    "build": "wxt build",
+    "build:firefox": "wxt build --browser firefox",
+    "zip": "wxt zip",
+    "zip:firefox": "wxt zip --browser firefox",
+    "compile": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "dexie": "^4.3.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "viem": "^2.31.0"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild"
+    ]
+  },
+  "devDependencies": {
+    "@types/chrome": "^0.1.36",
+    "@types/react": "^19.1.0",
+    "@types/react-dom": "^19.1.0",
+    "@vitest/coverage-v8": "^4.0.18",
+    "@wxt-dev/module-react": "^1.1.0",
+    "jsdom": "^28.0.0",
+    "typescript": "^5.8.0",
+    "vitest": "^3.1.0",
+    "wxt": "^0.20.0"
+  }
+}
