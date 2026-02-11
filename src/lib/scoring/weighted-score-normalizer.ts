@@ -7,14 +7,13 @@ import { TIER_THRESHOLDS } from '../constants';
  * Returns value clamped to 0-100 range.
  */
 export function computeCompositeScore(categories: CategoryScore[]): number {
-  // Sum all weighted scores
-  const totalWeighted = categories.reduce(
-    (sum, cat) => sum + cat.weightedScore,
-    0
-  );
+  const totalWeighted = categories.reduce((sum, cat) => sum + cat.weightedScore, 0);
+  const totalWeight = categories.reduce((sum, cat) => sum + cat.weight, 0);
 
-  // Clamp to 0-100
-  return Math.max(0, Math.min(100, Math.round(totalWeighted)));
+  // Normalize to 0-100 based on available weights (handles missing categories)
+  const normalized = totalWeight > 0 ? (totalWeighted / totalWeight) : 0;
+
+  return Math.max(0, Math.min(100, Math.round(normalized)));
 }
 
 /**

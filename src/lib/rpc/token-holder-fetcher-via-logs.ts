@@ -18,7 +18,7 @@ export async function fetchTopHolders(
   try {
     // Get current block for recent transfers
     const currentBlock = await client.getBlockNumber();
-    const fromBlock = currentBlock - 10000n; // Last ~10k blocks (~30min on Base)
+    const fromBlock = currentBlock > 200000n ? currentBlock - 200000n : 0n; // Last ~200k blocks (~4.5 days on Base)
 
     // Fetch recent Transfer events to find active holders
     const logs = await client.getLogs({

@@ -38,10 +38,30 @@ export async function scoreContractSafety(
 
   try {
     // Run checks in parallel
-    const [honeypotResult, bytecode, isStandard] = await Promise.allSettled([
+    const [honeypotResult, bytecode, isStandard, transferEventCount] = await Promise.allSettled([
       detectHoneypot(client, tokenAddress, poolAddress),
       getContractCode(client, tokenAddress),
       isErc20Standard(client, tokenAddress),
+      // Count recent Transfer events (getTransactionCount returns contract nonce, not activity)
+      (async () => {
+        const currentBlock = await client.getBlockNumber();
+        const fromBlock = currentBlock > 10000n ? currentBlock - 10000n : 0n;
+        const logs = await client.getLogs({
+          address: tokenAddress,
+          event: {
+            type: 'event',
+            name: 'Transfer',
+            inputs: [
+              { type: 'address', indexed: true, name: 'from' },
+              { type: 'address', indexed: true, name: 'to' },
+              { type: 'uint256', indexed: false, name: 'value' },
+            ],
+          },
+          fromBlock,
+          toBlock: currentBlock,
+        });
+        return logs.length;
+      })(),
     ]);
 
     // Signal 1: Honeypot check (-20 to 0 points)
@@ -122,6 +142,26 @@ export async function scoreContractSafety(
       points: bytecodePoints,
       maxPoints: 5,
       detail: bytecodeDetail,
+    });
+
+    // Signal 5: Token transfer activity (0-5 points)
+    let activityPoints = 0;
+    let activityDetail = 'No activity data';
+    if (transferEventCount.status === 'fulfilled') {
+      const txCount = transferEventCount.value;
+      if (txCount >= 200) activityPoints = 5;
+      else if (txCount >= 100) activityPoints = 4;
+      else if (txCount >= 30) activityPoints = 3;
+      else if (txCount >= 10) activityPoints = 2;
+      else if (txCount >= 1) activityPoints = 1;
+      activityDetail = `${txCount} recent transfers`;
+    }
+
+    signals.push({
+      name: 'Contract Activity',
+      points: activityPoints,
+      maxPoints: 5,
+      detail: activityDetail,
     });
 
     // Calculate category score
