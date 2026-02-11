@@ -16,6 +16,7 @@ export interface TokenCardData {
   tokenAddress: `0x${string}`;
   creatorAddress?: `0x${string}`;
   element: HTMLElement;
+  marketCapUsd?: number;
 }
 
 /** Message sent from content script to service worker requesting quick scores */
@@ -33,6 +34,7 @@ export interface FullScoreRequest {
   tokenAddress: `0x${string}`;
   creatorAddress: `0x${string}`;
   poolAddress?: `0x${string}`;
+  marketCapUsd?: number;
 }
 
 /** Union type for all score request messages */

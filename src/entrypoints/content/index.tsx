@@ -143,7 +143,7 @@ function getSidebarHost(): HTMLDivElement {
 }
 
 /** Open sidebar with full score details */
-async function openSidebar(tokenAddress: string, creatorAddress?: string): Promise<void> {
+async function openSidebar(tokenAddress: string, creatorAddress?: string, marketCapUsd?: number): Promise<void> {
   // Close if already open for this token (toggle behavior)
   if (currentOpenTokenAddress === tokenAddress) {
     closeSidebar();
@@ -169,6 +169,7 @@ async function openSidebar(tokenAddress: string, creatorAddress?: string): Promi
     action: 'score-full',
     tokenAddress: tokenAddress as `0x${string}`,
     creatorAddress: effectiveCreator as `0x${string}`,
+    marketCapUsd,
   };
 
   try {
@@ -207,7 +208,7 @@ async function scoreAndInjectCards(cards: TokenCardData[]): Promise<void> {
   // Cards without creator: show clickable placeholder immediately (no RPC needed)
   for (const card of withoutCreator) {
     card.element.querySelector(`.${BADGE_HOST_CLASS}`)?.remove();
-    injectPlaceholderBadge(card.element, () => openSidebar(card.tokenAddress));
+    injectPlaceholderBadge(card.element, () => openSidebar(card.tokenAddress, undefined, card.marketCapUsd));
   }
 
   // Cards with creator: show loading then fetch quick scores
@@ -241,7 +242,7 @@ async function scoreAndInjectCards(cards: TokenCardData[]): Promise<void> {
             score,
             card.tokenAddress,
             card.creatorAddress!,
-            () => openSidebar(card.tokenAddress, card.creatorAddress)
+            () => openSidebar(card.tokenAddress, card.creatorAddress, card.marketCapUsd)
           );
         }
       }

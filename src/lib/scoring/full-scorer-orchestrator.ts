@@ -27,7 +27,8 @@ export async function computeFullScore(
   client: BaseClient,
   tokenAddress: `0x${string}`,
   creatorAddress: `0x${string}`,
-  poolAddress?: `0x${string}`
+  poolAddress?: `0x${string}`,
+  domMarketCapUsd?: number
 ): Promise<FullScore> {
   try {
     // Check cache first
@@ -61,7 +62,7 @@ export async function computeFullScore(
       .map((r) => (r as PromiseFulfilledResult<any>).value);
 
     // Add market activity score (synchronous, always succeeds)
-    categories.push(scoreMarketActivity(dexData));
+    categories.push(scoreMarketActivity(dexData, domMarketCapUsd));
 
     // If no categories, return danger score
     if (categories.length === 0) {

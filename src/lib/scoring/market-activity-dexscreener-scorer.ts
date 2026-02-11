@@ -22,27 +22,14 @@ function getTier(percentage: number): ScoreTier {
  * Signals: market cap (0-8), volume (0-7), liquidity (0-5), txns (0-5), price stability (0-5)
  */
 export function scoreMarketActivity(
-  dexData: DexScreenerPair | null
+  dexData: DexScreenerPair | null,
+  domMarketCapUsd?: number
 ): CategoryScore {
   const signals: SignalResult[] = [];
 
+  // When no DexScreener data, use DOM-parsed market cap as sole signal
   if (!dexData) {
-    signals.push({
-      name: 'Market Data',
-      points: 0,
-      maxPoints: MAX_POINTS,
-      detail: 'Not listed on DEX yet',
-    });
-
-    return {
-      name: 'Market Activity',
-      weight: CATEGORY_WEIGHT,
-      rawScore: 0,
-      maxScore: MAX_POINTS,
-      weightedScore: 0,
-      tier: 'DANGER',
-      signals,
-    };
+    return scoreFromDomData(domMarketCapUsd);
   }
 
   // Signal 1: Market cap / FDV (0-8 points)
@@ -144,6 +131,57 @@ export function scoreMarketActivity(
     name: 'Market Activity',
     weight: CATEGORY_WEIGHT,
     rawScore,
+    maxScore: MAX_POINTS,
+    weightedScore,
+    tier: getTier(percentage),
+    signals,
+  };
+}
+
+/**
+ * Fallback scoring when DexScreener has no data.
+ * Uses DOM-parsed market cap for continuous scoring (logarithmic scale).
+ */
+function scoreFromDomData(domMarketCapUsd?: number): CategoryScore {
+  const signals: SignalResult[] = [];
+
+  if (!domMarketCapUsd || domMarketCapUsd <= 0) {
+    signals.push({
+      name: 'Market Data',
+      points: 0,
+      maxPoints: MAX_POINTS,
+      detail: 'No market data available',
+    });
+    return {
+      name: 'Market Activity',
+      weight: CATEGORY_WEIGHT,
+      rawScore: 0,
+      maxScore: MAX_POINTS,
+      weightedScore: 0,
+      tier: 'DANGER',
+      signals,
+    };
+  }
+
+  // Continuous logarithmic scoring based on market cap (0-30 points)
+  // $100 = ~5pts, $1K = ~10pts, $10K = ~17pts, $100K = ~23pts, $1M = ~30pts
+  const logScore = Math.log10(Math.max(1, domMarketCapUsd));
+  const points = Math.min(MAX_POINTS, Math.round((logScore / 6) * MAX_POINTS));
+
+  signals.push({
+    name: 'Market Cap (from page)',
+    points,
+    maxPoints: MAX_POINTS,
+    detail: `$${formatNumber(domMarketCapUsd)} market cap`,
+  });
+
+  const percentage = (points / MAX_POINTS) * 100;
+  const weightedScore = (percentage / 100) * CATEGORY_WEIGHT * 100;
+
+  return {
+    name: 'Market Activity',
+    weight: CATEGORY_WEIGHT,
+    rawScore: points,
     maxScore: MAX_POINTS,
     weightedScore,
     tier: getTier(percentage),

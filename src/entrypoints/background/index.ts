@@ -64,7 +64,8 @@ async function handleFullScore(
     client,
     request.tokenAddress,
     request.creatorAddress,
-    request.poolAddress
+    request.poolAddress,
+    request.marketCapUsd
   );
 
   // Track stats
