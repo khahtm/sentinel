@@ -6,8 +6,8 @@ import { fetchTopHolders } from '../rpc/token-holder-fetcher-via-logs';
 
 type BaseClient = ReturnType<typeof createBaseClient>;
 
-/** Category weight: 25% of total score */
-const CATEGORY_WEIGHT = 0.25;
+/** Category weight: 20% of total score */
+const CATEGORY_WEIGHT = 0.2;
 
 /** Maximum points for this category */
 const MAX_POINTS = 25;

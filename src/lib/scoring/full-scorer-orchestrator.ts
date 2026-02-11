@@ -4,11 +4,13 @@ import {
   getCachedScore,
   setCachedScore,
 } from '../db/score-cache-with-ttl-repository';
+import { fetchDexScreenerData } from '../api/dexscreener-token-data-fetcher';
 import { scoreCreatorTrust } from './creator-trust-scorer-with-cache';
 import { scoreHolderHealth } from './holder-health-distribution-scorer';
 import { scoreContractSafety } from './contract-safety-honeypot-scorer';
 import { scoreLiquiditySignal } from './liquidity-depth-signal-scorer';
 import { scoreSocialSignal } from './social-metadata-signal-scorer';
+import { scoreMarketActivity } from './market-activity-dexscreener-scorer';
 import {
   computeCompositeScore,
   getTierFromScore,
@@ -18,12 +20,8 @@ type BaseClient = ReturnType<typeof createBaseClient>;
 
 /**
  * Compute comprehensive token score using all scoring categories.
+ * Fetches DexScreener market data first to get pool address and market signals.
  * Results are cached for 60 seconds.
- *
- * @param client - Base chain RPC client
- * @param tokenAddress - Token contract address
- * @param creatorAddress - Token creator wallet address
- * @param poolAddress - Optional liquidity pool address for enhanced checks
  */
 export async function computeFullScore(
   client: BaseClient,
@@ -38,14 +36,20 @@ export async function computeFullScore(
       return cached;
     }
 
+    // Fetch DexScreener data for market signals and pool address discovery
+    const dexData = await fetchDexScreenerData(tokenAddress);
+    const discoveredPool = dexData?.pairAddress as `0x${string}` | undefined;
+    const effectivePool = poolAddress ?? discoveredPool;
+
     // Skip Creator Trust when creator address is same as token (no real creator data)
     const hasRealCreator = creatorAddress.toLowerCase() !== tokenAddress.toLowerCase();
 
+    // Run on-chain scorers in parallel, plus market scorer (sync, uses dexData)
     const scorers = [
       ...(hasRealCreator ? [scoreCreatorTrust(client, tokenAddress, creatorAddress)] : []),
       scoreHolderHealth(client, tokenAddress),
-      scoreContractSafety(client, tokenAddress, poolAddress),
-      scoreLiquiditySignal(client, tokenAddress, poolAddress),
+      scoreContractSafety(client, tokenAddress, effectivePool),
+      scoreLiquiditySignal(client, tokenAddress, effectivePool),
       scoreSocialSignal(client, tokenAddress),
     ];
 
@@ -56,9 +60,12 @@ export async function computeFullScore(
       .filter((r) => r.status === 'fulfilled')
       .map((r) => (r as PromiseFulfilledResult<any>).value);
 
-    // If all scorers failed, return danger score
+    // Add market activity score (synchronous, always succeeds)
+    categories.push(scoreMarketActivity(dexData));
+
+    // If no categories, return danger score
     if (categories.length === 0) {
-      const errorScore: FullScore = {
+      return {
         tokenAddress,
         creatorAddress,
         score: 0,
@@ -67,7 +74,6 @@ export async function computeFullScore(
         timestamp: Date.now(),
         phase: 'full',
       };
-      return errorScore;
     }
 
     // Compute composite score
@@ -91,7 +97,6 @@ export async function computeFullScore(
   } catch (error) {
     console.error('Error computing full score:', error);
 
-    // Return minimal danger score on catastrophic error
     return {
       tokenAddress,
       creatorAddress,

@@ -9,8 +9,8 @@ import {
 
 type BaseClient = ReturnType<typeof createBaseClient>;
 
-/** Category weight: 30% of total score */
-const CATEGORY_WEIGHT = 0.3;
+/** Category weight: 20% of total score */
+const CATEGORY_WEIGHT = 0.2;
 
 /** Maximum points for this category */
 const MAX_POINTS = 30;

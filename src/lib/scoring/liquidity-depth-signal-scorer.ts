@@ -5,8 +5,8 @@ import type { ScoreTier } from '../../types';
 
 type BaseClient = ReturnType<typeof createBaseClient>;
 
-/** Category weight: 15% of total score */
-const CATEGORY_WEIGHT = 0.15;
+/** Category weight: 10% of total score */
+const CATEGORY_WEIGHT = 0.1;
 
 /** Maximum points for this category */
 const MAX_POINTS = 15;
